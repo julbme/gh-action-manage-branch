@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"me.julb","l":"Application"},{"p":"me.julb.applications.github.actions","l":"InputBranchState"},{"p":"me.julb.applications.github.actions","l":"ManageBranchGitHubAction"},{"p":"me.julb.applications.github.actions","l":"OutputVars"}];updateSearchResults();
