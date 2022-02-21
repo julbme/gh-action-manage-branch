@@ -1,6 +1,6 @@
 FROM eclipse-temurin:17-jre
 
-ENV JAVA_TOOL_OPTIONS=
+ENV JAVA_TOOL_OPTIONS=""
 
 ARG SCM_URL=https://github.com/julbme/gh-action-manage-branch
 ARG ARTIFACT_ID=gh-action-manage-branch
@@ -8,6 +8,6 @@ ARG VERSION=1.0.1-SNAPSHOT
 
 WORKDIR /app
 
-RUN curl -s -L -o /app/app.jar $SCM_URL/releases/download/v${VERSION}/${ARTIFACT_ID}-${VERSION}-shaded.jar"
+RUN curl -s -L -o /app/app.jar "${SCM_URL}/releases/download/v${VERSION}/${ARTIFACT_ID}-${VERSION}-shaded.jar"
 
-ENTRYPOINT java ${JAVA_TOOL_OPTIONS} -jar /app/app.jar
+CMD ["sh", "-c", "java ${JAVA_TOOL_OPTIONS} -jar /app/app.jar"]
