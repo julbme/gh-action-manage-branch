@@ -194,7 +194,7 @@ class ManageBranchGitHubActionTest {
         when(this.ghApiMock.getRepository("octocat/Hello-World")).thenReturn(ghRepositoryMock);
         doReturn(Optional.empty()).when(spy).getBranchGHRef("new-branch");
         doReturn(Optional.empty()).when(spy).getAnyGHRef("123456");
-        doReturn(ghRefCreated).when(spy).createGHRef("new-branch", "123456", Optional.empty());
+        doReturn(ghRefCreated).when(spy).createGHRef("refs/heads/new-branch", "123456", Optional.empty());
 
         spy.execute();
 
@@ -206,7 +206,7 @@ class ManageBranchGitHubActionTest {
         verify(spy).connectApi();
         verify(spy).getBranchGHRef("new-branch");
         verify(spy).getAnyGHRef("123456");
-        verify(spy).createGHRef("new-branch", "123456", Optional.empty());
+        verify(spy).createGHRef("refs/heads/new-branch", "123456", Optional.empty());
 
         verify(this.ghApiMock).getRepository("octocat/Hello-World");
         verify(this.ghActionsKitMock).setOutput(OutputVars.REF.key(), "refs/heads/new-branch");
@@ -240,7 +240,7 @@ class ManageBranchGitHubActionTest {
         when(this.ghApiMock.getRepository("octocat/Hello-World")).thenReturn(ghRepositoryMock);
         doReturn(Optional.of(ghRefExisting)).when(spy).getBranchGHRef("existing-branch");
         doReturn(Optional.empty()).when(spy).getAnyGHRef("789123");
-        doReturn(ghRefCreated).when(spy).createGHRef("existing-branch", "789123", Optional.of(ghRefExisting));
+        doReturn(ghRefCreated).when(spy).createGHRef("refs/heads/existing-branch", "789123", Optional.of(ghRefExisting));
 
         spy.execute();
 
@@ -252,7 +252,7 @@ class ManageBranchGitHubActionTest {
         verify(spy).connectApi();
         verify(spy).getBranchGHRef("existing-branch");
         verify(spy).getAnyGHRef("789123");
-        verify(spy).createGHRef("existing-branch", "789123", Optional.of(ghRefExisting));
+        verify(spy).createGHRef("refs/heads/existing-branch", "789123", Optional.of(ghRefExisting));
 
         verify(this.ghApiMock).getRepository("octocat/Hello-World");
         verify(this.ghActionsKitMock).setOutput(OutputVars.REF.key(), "refs/heads/existing-branch");
@@ -465,7 +465,7 @@ class ManageBranchGitHubActionTest {
     void whenCreateGHRefEmptyExistingBranch_thenCreateBranch()
         throws Exception {
 
-        this.githubAction.createGHRef("new-branch", "123456", Optional.empty());
+        this.githubAction.createGHRef("refs/heads/new-branch", "123456", Optional.empty());
 
         verify(ghActionsKitMock).notice(Mockito.anyString());
         verify(ghRepositoryMock).createRef("refs/heads/new-branch", "123456");
@@ -479,8 +479,8 @@ class ManageBranchGitHubActionTest {
         throws Exception {
         var emptyOptional = Optional.<GHRef> empty();
         assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef(null, "123456", emptyOptional));
-        assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef("branch-name", null, emptyOptional));
-        assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef("branch-name", "123456", null));
+        assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef("refs/heads/branch-name", null, emptyOptional));
+        assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef("refs/heads/branch-name", "123456", null));
     }
 
     /**

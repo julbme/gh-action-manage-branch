@@ -87,15 +87,18 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
             ghRepository = ghApi.getRepository(ghActionsKit.getGitHubRepository());
 
             // Get existing branch if any.
-            Optional<GHRef> existingBranchGHRef = getBranchGHRef(branchName);
+            var existingBranchGHRef = getBranchGHRef(branchName);
 
             // Creation path.
             if (InputBranchState.PRESENT.equals(branchState)) {
+                // New ref
+                var newRef = branchRef(branchName);
+                
                 // Get source SHA.
-                String fromSha = getAnyGHRef(from).map(GHRef::getObject).map(GHObject::getSha).orElse(from);
+                var fromSha = getAnyGHRef(from).map(GHRef::getObject).map(GHObject::getSha).orElse(from);
 
                 // Create branch.
-                var ghRefCreated = createGHRef(branchName, fromSha, existingBranchGHRef);
+                var ghRefCreated = createGHRef(newRef, fromSha, existingBranchGHRef);
 
                 // Set output.
                 ghActionsKit.setOutput(OutputVars.REF.key(), ghRefCreated.getRef());
@@ -187,13 +190,15 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
     /**
      * Gets the {@link GHRef} branch or tag matching the given name.
      * @param name the branch or tag name to look for.
-     * @return the {@link GHRef} for the given branch if exists, <code>false</code> otherwise.
+     * @return the {@link GHRef} for the given branch or tag if exists, <code>false</code> otherwise.
      * @throws IOException if an error occurs.
      */
     Optional<GHRef> getAnyGHRef(@NonNull String name)
         throws IOException {
-        // Convert branch name to ref
+        // Convert name to branch ref
         var branchRef = branchRef(name);
+
+        // Convert name to tag ref
         var tagRef = tagRef(name);
 
         // List of candidates for which ref is OK.
@@ -212,24 +217,23 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
 
     /**
      * Creates or updates the {@link GHRef} if any.
-     * @param newBranchName the branch name to create.
+     * @param newRef the ref to create.
      * @param sourceSHA the SHA from which to create the branch.
      * @param existingRef the {@link GHRef} for the existing branch, or {@link Optional#empty()} if the branch does not exist.
      * @return the {@link GHRef} created.
      * @throws IOException if an error occurs.
      */
-    GHRef createGHRef(@NonNull String newBranchName, @NonNull String sourceSHA, @NonNull Optional<GHRef> existingRef)
+    GHRef createGHRef(@NonNull String newRef, @NonNull String sourceSHA, @NonNull Optional<GHRef> existingRef)
         throws IOException {
         GHRef ghRefManaged;
 
         if (existingRef.isEmpty()) {
             // The branch does not exist: create
-            ghActionsKit.notice("creating the branch.");
-            var newBranchRef = branchRef(newBranchName);
-            ghRefManaged = ghRepository.createRef(newBranchRef, sourceSHA);
+            ghActionsKit.notice("creating the ref.");
+            ghRefManaged = ghRepository.createRef(newRef, sourceSHA);
         } else {
             // The branch already exists: update to source SHA.
-            ghActionsKit.notice("updating the branch with the given SHA");
+            ghActionsKit.notice("updating the ref with the given SHA");
             ghRefManaged = existingRef.get();
             ghRefManaged.updateTo(sourceSHA, true);
         }
