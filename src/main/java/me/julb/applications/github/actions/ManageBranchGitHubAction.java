@@ -21,17 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package me.julb.applications.github.actions;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionException;
-
-import lombok.AccessLevel;
-import lombok.NonNull;
-import lombok.Setter;
 
 import org.kohsuke.github.GHRef;
 import org.kohsuke.github.GHRef.GHObject;
@@ -41,6 +36,10 @@ import org.kohsuke.github.GitHubBuilder;
 
 import me.julb.sdk.github.actions.kit.GitHubActionsKit;
 import me.julb.sdk.github.actions.spi.GitHubActionProvider;
+
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * The action to manage branches. <br>
@@ -78,7 +77,8 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
             var from = getInputFrom();
 
             // Trace parameters
-            ghActionsKit.debug(String.format("parameters: [name: %s, state: %s, from: %s]", branchName, branchState.name(), from));
+            ghActionsKit.debug(
+                    String.format("parameters: [name: %s, state: %s, from: %s]", branchName, branchState.name(), from));
 
             // Read GitHub repository.
             connectApi();
@@ -93,9 +93,12 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
             if (InputBranchState.PRESENT.equals(branchState)) {
                 // New ref
                 var newRef = branchRef(branchName);
-                
+
                 // Get source SHA.
-                var fromSha = getAnyGHRef(from).map(GHRef::getObject).map(GHObject::getSha).orElse(from);
+                var fromSha = getAnyGHRef(from)
+                        .map(GHRef::getObject)
+                        .map(GHObject::getSha)
+                        .orElse(from);
 
                 // Create branch.
                 var ghRefCreated = createGHRef(newRef, fromSha, existingBranchGHRef);
@@ -103,7 +106,8 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
                 // Set output.
                 ghActionsKit.setOutput(OutputVars.REF.key(), ghRefCreated.getRef());
                 ghActionsKit.setOutput(OutputVars.NAME.key(), branchName);
-                ghActionsKit.setOutput(OutputVars.SHA.key(), ghRefCreated.getObject().getSha());
+                ghActionsKit.setOutput(
+                        OutputVars.SHA.key(), ghRefCreated.getObject().getSha());
             } else {
                 // Delete branch.
                 deleteGHRef(existingBranchGHRef);
@@ -148,21 +152,21 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
      * Connects to GitHub API.
      * @throws IOException if an error occurs.
      */
-    void connectApi()
-        throws IOException {
+    void connectApi() throws IOException {
         ghActionsKit.debug("github api url connection: check.");
 
         // Get token
         var githubToken = ghActionsKit.getRequiredEnv("GITHUB_TOKEN");
 
-        //@formatter:off
-        ghApi = Optional.ofNullable(ghApi).orElse(new GitHubBuilder()
-            .withEndpoint(ghActionsKit.getGitHubApiUrl())
-            .withOAuthToken(githubToken)
-            .build());
+        // @formatter:off
+        ghApi = Optional.ofNullable(ghApi)
+                .orElse(new GitHubBuilder()
+                        .withEndpoint(ghActionsKit.getGitHubApiUrl())
+                        .withOAuthToken(githubToken)
+                        .build());
         ghApi.checkApiUrlValidity();
         ghActionsKit.debug("github api url connection: ok.");
-        //@formatter:on
+        // @formatter:on
     }
 
     /**
@@ -171,8 +175,7 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
      * @return the {@link GHRef} for the given branch if exists, <code>false</code> otherwise.
      * @throws IOException if an error occurs.
      */
-    Optional<GHRef> getBranchGHRef(@NonNull String name)
-        throws IOException {
+    Optional<GHRef> getBranchGHRef(@NonNull String name) throws IOException {
         // Convert branch name to ref
         var branchRef = branchRef(name);
 
@@ -193,8 +196,7 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
      * @return the {@link GHRef} for the given branch or tag if exists, <code>false</code> otherwise.
      * @throws IOException if an error occurs.
      */
-    Optional<GHRef> getAnyGHRef(@NonNull String name)
-        throws IOException {
+    Optional<GHRef> getAnyGHRef(@NonNull String name) throws IOException {
         // Convert name to branch ref
         var branchRef = branchRef(name);
 
@@ -224,7 +226,7 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
      * @throws IOException if an error occurs.
      */
     GHRef createGHRef(@NonNull String newRef, @NonNull String sourceSHA, @NonNull Optional<GHRef> existingRef)
-        throws IOException {
+            throws IOException {
         GHRef ghRefManaged;
 
         if (existingRef.isEmpty()) {
@@ -246,8 +248,7 @@ public class ManageBranchGitHubAction implements GitHubActionProvider {
      * @param refToDelete the {@link GHRef} to delete, or {@link Optional#empty()}.
      * @throws IOException if an error occurs.
      */
-    void deleteGHRef(@NonNull Optional<GHRef> refToDelete)
-        throws IOException {
+    void deleteGHRef(@NonNull Optional<GHRef> refToDelete) throws IOException {
         // Check if branch exists.
         if (refToDelete.isPresent()) {
             // The branch exists: delete.

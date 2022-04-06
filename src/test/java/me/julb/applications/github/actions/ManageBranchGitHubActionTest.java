@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package me.julb.applications.github.actions;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,8 +84,7 @@ class ManageBranchGitHubActionTest {
      * @throws java.lang.Exception
      */
     @BeforeEach
-    void setUp()
-        throws Exception {
+    void setUp() throws Exception {
         githubAction = new ManageBranchGitHubAction();
         githubAction.setGhActionsKit(ghActionsKitMock);
         githubAction.setGhApi(ghApiMock);
@@ -97,8 +95,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputName_thenReturnValue()
-        throws Exception {
+    void whenGetInputName_thenReturnValue() throws Exception {
         when(this.ghActionsKitMock.getRequiredInput("name")).thenReturn("Hello-World");
 
         assertThat(this.githubAction.getInputName()).isEqualTo("Hello-World");
@@ -120,9 +117,9 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputStateProvided_thenReturnValue()
-        throws Exception {
-        when(this.ghActionsKitMock.getEnumInput("state", InputBranchState.class)).thenReturn(Optional.of(InputBranchState.ABSENT));
+    void whenGetInputStateProvided_thenReturnValue() throws Exception {
+        when(this.ghActionsKitMock.getEnumInput("state", InputBranchState.class))
+                .thenReturn(Optional.of(InputBranchState.ABSENT));
 
         assertThat(this.githubAction.getInputState()).isEqualTo(InputBranchState.ABSENT);
 
@@ -133,9 +130,9 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputStateNotProvided_thenReturnDefaultValue()
-        throws Exception {
-        when(this.ghActionsKitMock.getEnumInput("state", InputBranchState.class)).thenReturn(Optional.empty());
+    void whenGetInputStateNotProvided_thenReturnDefaultValue() throws Exception {
+        when(this.ghActionsKitMock.getEnumInput("state", InputBranchState.class))
+                .thenReturn(Optional.empty());
 
         assertThat(this.githubAction.getInputState()).isEqualTo(InputBranchState.PRESENT);
 
@@ -146,8 +143,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputFromProvided_thenReturnValue()
-        throws Exception {
+    void whenGetInputFromProvided_thenReturnValue() throws Exception {
         when(this.ghActionsKitMock.getInput("from")).thenReturn(Optional.of("branch-name"));
 
         assertThat(this.githubAction.getInputFrom()).isEqualTo("branch-name");
@@ -159,8 +155,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetInputFromNotProvided_thenReturnDefaultValue()
-        throws Exception {
+    void whenGetInputFromNotProvided_thenReturnDefaultValue() throws Exception {
         when(this.ghActionsKitMock.getInput("from")).thenReturn(Optional.empty());
         when(this.ghActionsKitMock.getGitHubSha()).thenReturn("123456");
 
@@ -174,8 +169,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenExecuteCreateBranchNotExists_thenBranchCreated()
-        throws Exception {
+    void whenExecuteCreateBranchNotExists_thenBranchCreated() throws Exception {
         var spy = spy(this.githubAction);
 
         var ghRefCreated = Mockito.mock(GHRef.class);
@@ -218,8 +212,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenExecuteCreateBranchAlreadyExists_thenBranchUpdated()
-        throws Exception {
+    void whenExecuteCreateBranchAlreadyExists_thenBranchUpdated() throws Exception {
         var spy = spy(this.githubAction);
 
         var ghRefCreated = Mockito.mock(GHRef.class);
@@ -240,7 +233,9 @@ class ManageBranchGitHubActionTest {
         when(this.ghApiMock.getRepository("octocat/Hello-World")).thenReturn(ghRepositoryMock);
         doReturn(Optional.of(ghRefExisting)).when(spy).getBranchGHRef("existing-branch");
         doReturn(Optional.empty()).when(spy).getAnyGHRef("789123");
-        doReturn(ghRefCreated).when(spy).createGHRef("refs/heads/existing-branch", "789123", Optional.of(ghRefExisting));
+        doReturn(ghRefCreated)
+                .when(spy)
+                .createGHRef("refs/heads/existing-branch", "789123", Optional.of(ghRefExisting));
 
         spy.execute();
 
@@ -264,8 +259,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenExecuteDeleteBranchAlreadyExists_thenBranchDeleted()
-        throws Exception {
+    void whenExecuteDeleteBranchAlreadyExists_thenBranchDeleted() throws Exception {
         var spy = spy(this.githubAction);
 
         var ghRefExisting = Mockito.mock(GHRef.class);
@@ -302,8 +296,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenExecuteDeleteBranchNotExists_thenBranchDeleted()
-        throws Exception {
+    void whenExecuteDeleteBranchNotExists_thenBranchDeleted() throws Exception {
         var spy = spy(this.githubAction);
 
         when(this.ghActionsKitMock.getGitHubRepository()).thenReturn("octocat/Hello-World");
@@ -338,8 +331,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenConnectApi_thenVerifyOK()
-        throws Exception {
+    void whenConnectApi_thenVerifyOK() throws Exception {
         when(ghActionsKitMock.getRequiredEnv("GITHUB_TOKEN")).thenReturn("token");
         when(ghActionsKitMock.getGitHubApiUrl()).thenReturn("https://api.github.com");
 
@@ -355,8 +347,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetBranchGHRefExist_thenReturnRef()
-        throws Exception {
+    void whenGetBranchGHRefExist_thenReturnRef() throws Exception {
         var ghRef1 = Mockito.mock(GHRef.class);
         when(ghRef1.getRef()).thenReturn("refs/heads/main");
 
@@ -376,8 +367,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetBranchGHRefDoesNotExist_thenReturnEmpty()
-        throws Exception {
+    void whenGetBranchGHRefDoesNotExist_thenReturnEmpty() throws Exception {
         when(ghRepositoryMock.getRefs("heads")).thenReturn(new GHRef[] {});
 
         assertThat(this.githubAction.getBranchGHRef("branch-name")).isEmpty();
@@ -389,8 +379,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetBranchGHRefNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenGetBranchGHRefNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.getBranchGHRef(null));
     }
 
@@ -398,8 +387,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetAnyGHRefExist_thenReturnRef()
-        throws Exception {
+    void whenGetAnyGHRefExist_thenReturnRef() throws Exception {
         var ghRef1 = Mockito.mock(GHRef.class);
         when(ghRef1.getRef()).thenReturn("refs/heads/main");
 
@@ -426,8 +414,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetAnyGHRefDoesNotExist_thenReturnEmpty()
-        throws Exception {
+    void whenGetAnyGHRefDoesNotExist_thenReturnEmpty() throws Exception {
         when(ghRepositoryMock.getRefs()).thenReturn(new GHRef[] {});
 
         assertThat(this.githubAction.getAnyGHRef("branch-name")).isEmpty();
@@ -439,8 +426,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenGetAnyGHRefNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenGetAnyGHRefNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.getAnyGHRef(null));
     }
 
@@ -448,8 +434,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenCreateGHRefPresentExistingBranch_thenUpdateExistingBranch()
-        throws Exception {
+    void whenCreateGHRefPresentExistingBranch_thenUpdateExistingBranch() throws Exception {
         var ghRef = Mockito.mock(GHRef.class);
 
         this.githubAction.createGHRef("new-branch", "123456", Optional.of(ghRef));
@@ -462,8 +447,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenCreateGHRefEmptyExistingBranch_thenCreateBranch()
-        throws Exception {
+    void whenCreateGHRefEmptyExistingBranch_thenCreateBranch() throws Exception {
 
         this.githubAction.createGHRef("refs/heads/new-branch", "123456", Optional.empty());
 
@@ -475,20 +459,22 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenCreateGHRefNull_thenThrowNullPointerException()
-        throws Exception {
-        var emptyOptional = Optional.<GHRef> empty();
+    void whenCreateGHRefNull_thenThrowNullPointerException() throws Exception {
+        var emptyOptional = Optional.<GHRef>empty();
         assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef(null, "123456", emptyOptional));
-        assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef("refs/heads/branch-name", null, emptyOptional));
-        assertThrows(NullPointerException.class, () -> this.githubAction.createGHRef("refs/heads/branch-name", "123456", null));
+        assertThrows(
+                NullPointerException.class,
+                () -> this.githubAction.createGHRef("refs/heads/branch-name", null, emptyOptional));
+        assertThrows(
+                NullPointerException.class,
+                () -> this.githubAction.createGHRef("refs/heads/branch-name", "123456", null));
     }
 
     /**
      * Test method.
      */
     @Test
-    void whenDeleteGHRefPresent_thenDeleteGhRef()
-        throws Exception {
+    void whenDeleteGHRefPresent_thenDeleteGhRef() throws Exception {
         var ghRef = Mockito.mock(GHRef.class);
 
         assertDoesNotThrow(() -> {
@@ -515,8 +501,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenDeleteGHRefNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenDeleteGHRefNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.deleteGHRef(null));
     }
 
@@ -532,8 +517,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenBranchRefNameNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenBranchRefNameNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.branchRef(null));
     }
 
@@ -549,8 +533,7 @@ class ManageBranchGitHubActionTest {
      * Test method.
      */
     @Test
-    void whenTagRefNameNull_thenThrowNullPointerException()
-        throws Exception {
+    void whenTagRefNameNull_thenThrowNullPointerException() throws Exception {
         assertThrows(NullPointerException.class, () -> this.githubAction.tagRef(null));
     }
 }
