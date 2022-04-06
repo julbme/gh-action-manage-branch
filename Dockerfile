@@ -4,7 +4,7 @@ ENV JVM_ARGS="--add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/s
 
 ARG SCM_URL=https://github.com/julbme/gh-action-manage-branch
 ARG ARTIFACT_ID=gh-action-manage-branch
-ARG VERSION=1.0.2
+ARG VERSION=1.0.3-SNAPSHOT
 
 WORKDIR /app
 
