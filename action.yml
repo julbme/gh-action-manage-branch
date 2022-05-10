@@ -1,4 +1,4 @@
-name: Manage branches
+name: Manage GitHub branches
 description: "Manage the branches for a given repository"
 author: "julbme"
 branding:
